@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "tailwind.config.js",
-  
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview"
-},
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -24,8 +23,10 @@
     "react-router-dom": "^7.18.0"
   },
   "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.5.1",
     "postcss": "^8.5.15",
-    "tailwindcss": "^4.3.1"
+    "tailwindcss": "^4.3.1",
+    "vite": "^8.1.0"
   }
 }
