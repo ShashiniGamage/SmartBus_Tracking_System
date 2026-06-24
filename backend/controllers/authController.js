@@ -2,29 +2,35 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Token එකක් නිපදවීමේ ශ්‍රිතය (Function)
+// Token generation function
 const generateToken = (id, role) => {
     return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-        expiresIn: '30d', // දින 30කින් ටෝකන් එක කල් ඉකුත් වේ
+        expiresIn: '30d', // The token expires in 30 days.
+
+
     });
 };
 
-// 1. අලුත් පරිශීලකයෙක් ලියාපදිංචි කිරීම (Register)
+// 1. Register a new user (Register)
+
+
 const registerUser = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     try {
-        // මේ ඊමේල් එකෙන් කලින් කෙනෙක් ඉන්නවාදැයි බැලීම
+        // Check if someone already has this email
+
+
         const userExists = await User.findByEmail(email);
         if (userExists) {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // මුරපදය (Password) ආරක්ෂිතව කේතනය කිරීම (Hashing)
+        // Password Hashing
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        // අලුත් පරිශීලකයාව Database එකට දැමීම
+        // Adding a new user to the database
         const userData = {
             name,
             email,
@@ -44,20 +50,28 @@ const registerUser = async (req, res) => {
     }
 };
 
-// 2. පද්ධතියට ඇතුළු වීම (Login)
+// 2. Login to the system
+
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // ඊමේල් එකෙන් පරිශීලකයාව සෙවීම
+        // Search for a user by email
+
+
         const user = await User.findByEmail(email);
 
-        // පරිශීලකයෙක් නැත්නම් හෝ මුරපදය වැරදි නම්
+        // If there is no user or the password is incorrect
+
+
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        // පරිශීලකයා නිවැරදි නම්, ඔහුට Token එකක් සහ දත්ත යැවීම
+        // If the user is correct, send him a token and data
+
+
         res.json({
             id: user.id,
             name: user.name,

@@ -1,22 +1,22 @@
 const jwt = require('jsonwebtoken');
 
-// 1. සාමාන්‍ය පරිශීලකයින් සඳහා (Login වී ඇත්දැයි බැලීම)
+// 1. For regular users (checking if logged in)
 const protect = (req, res, next) => {
     let token;
 
-    // Token එක එන්නේ Header එකේ 'Authorization' කියන තැන 'Bearer <token>' විදිහටයි
+    // The token comes in the header 'Authorization' as 'Bearer <token>'.
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            // 'Bearer ' කියන වචනය අයින් කරලා token එක පමණක් වෙන් කරගැනීම
+            // Removing the word 'Bearer' and separating it into just the token
             token = req.headers.authorization.split(' ')[1];
 
-            // Token එක නිවැරදිද යන්න .env එකේ ඇති JWT_SECRET හරහා පරීක්ෂා කිරීම
+            // Checking whether the token is correct via JWT_SECRET in .env
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // පරිශීලකයාගේ තොරතුරු (id, role) ඉදිරි ක්‍රියාවලිය සඳහා req එකට ඇතුලත් කිරීම
+            // Entering the user's information (id, role) into the req for further processing
             req.user = decoded;
 
-            // නිවැරදි නම් ඊළඟ පියවරට (Controller එකට) යන්න දෙනවා
+            // If correct, it will allow you to proceed to the next step (Controller).
             next();
         } catch (error) {
             return res.status(401).json({ message: 'Not authorized, token failed' });
@@ -28,7 +28,7 @@ const protect = (req, res, next) => {
     }
 };
 
-// 2. Admin සඳහා පමණක් සීමා වූ කොටස් ආරක්ෂා කිරීම
+// 2. Protecting sections restricted to admins only
 const adminOnly = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
         next();

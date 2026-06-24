@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 class Tracking {
-    // බස් එකේ ලෝකේෂන් එක අප්ඩේට් කිරීම (Trip එකක් හරහා)
+    // Updating the bus location (via a trip)
     static async updateLocation(tripId, lat, lng) {
         const sql = `
             UPDATE Trips 
@@ -12,7 +12,7 @@ class Tracking {
         return result;
     }
 
-    // දැනට ධාවනය වන (active) සියලුම බස් වල ලෝකේෂන් ගැනීම (Map එකට)
+    // Get the location of all currently running (active) buses (on the map)
     static async getActiveTrips() {
         const sql = `
             SELECT t.id, t.status, t.current_lat, t.current_lng, t.delay_reason,
