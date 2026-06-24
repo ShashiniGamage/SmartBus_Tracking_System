@@ -18,19 +18,24 @@ exports.updateLocation = async (req, res) => {
 
     try {
         if (is_gps_active) {
-            // GPS වැඩ නම් Driver ගේ phone එකෙන් එන නියම live location එක update කරනවා
+            // If GPS is working, the exact live location from the driver's phone will be updated
+
             await db.query(
                 "UPDATE Trips SET current_lat = ?, current_lng = ?, status = 'active' WHERE id = ?",
                 [lat, lng, trip_id]
             );
             return res.json({ status: "success", mode: "GPS Live Tracking" });
         } else {
-            // GPS නැත්නම් Fallback: Time estimation එකට අනුව ඊළඟට තියෙන Bus Stop එක calculate කරනවා
+            // GPS or Fallback: Calculates the next bus stop based on time estimation
+
+
             const [trip] = await db.query("SELECT route_id FROM Trips WHERE id = ?", [trip_id]);
             if (trip.length === 0) return res.status(404).json({ error: "Trip not found" });
 
             const route_id = trip[0].route_id;
-            // ගතවූ කාලයට ආසන්නම Bus stop එක database එකෙන් ගන්නවා
+            // The closest bus stop to the elapsed time is retrieved from the database
+
+
             const [stops] = await db.query(
                 "SELECT latitude, longitude FROM Route_Stops WHERE route_id = ? AND estimated_time_from_start <= ? ORDER BY stop_order DESC LIMIT 1",
                 [route_id, minutes_elapsed]
