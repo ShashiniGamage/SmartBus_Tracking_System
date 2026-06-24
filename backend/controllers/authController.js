@@ -1,33 +1,78 @@
-const db = require('../config/db');
+const User = require('../models/User');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-exports.register = async (req, res) => {
+// Token එකක් නිපදවීමේ ශ්‍රිතය (Function)
+const generateToken = (id, role) => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+        expiresIn: '30d', // දින 30කින් ටෝකන් එක කල් ඉකුත් වේ
+    });
+};
+
+// 1. අලුත් පරිශීලකයෙක් ලියාපදිංචි කිරීම (Register)
+const registerUser = async (req, res) => {
     const { name, email, password, role } = req.body;
+
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const [result] = await db.query(
-            "INSERT INTO Users (name, email, password, role) VALUES (?, ?, ?, ?)",
-            [name, email, hashedPassword, role]
-        );
-        res.status(201).json({ message: "User registered successfully!" });
+        // මේ ඊමේල් එකෙන් කලින් කෙනෙක් ඉන්නවාදැයි බැලීම
+        const userExists = await User.findByEmail(email);
+        if (userExists) {
+            return res.status(400).json({ message: 'User already exists' });
+        }
+
+        // මුරපදය (Password) ආරක්ෂිතව කේතනය කිරීම (Hashing)
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // අලුත් පරිශීලකයාව Database එකට දැමීම
+        const userData = {
+            name,
+            email,
+            password: hashedPassword,
+            role: role || 'passenger'
+        };
+
+        const result = await User.create(userData);
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            userId: result.insertId
+        });
+
     } catch (error) {
-        res.status(500).json({ error: "Registration failed", details: error.message });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 };
 
-exports.login = async (req, res) => {
+// 2. පද්ධතියට ඇතුළු වීම (Login)
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        const [users] = await db.query("SELECT * FROM Users WHERE email = ?", [email]);
-        if (users.length === 0) return res.status(404).json({ error: "User not found" });
+        // ඊමේල් එකෙන් පරිශීලකයාව සෙවීම
+        const user = await User.findByEmail(email);
 
-        const user = users[0];
-        const isMatch = await bcrypt.compare(password, user.password);
-        
-        if (!isMatch) return res.status(401).json({ error: "Invalid credentials" });
+        // පරිශීලකයෙක් නැත්නම් හෝ මුරපදය වැරදි නම්
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
 
-        res.status(200).json({ message: "Login successful", user: { id: user.id, name: user.name, role: user.role } });
+        // පරිශීලකයා නිවැරදි නම්, ඔහුට Token එකක් සහ දත්ත යැවීම
+        res.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            status: user.status,
+            token: generateToken(user.id, user.role)
+        });
+
     } catch (error) {
-        res.status(500).json({ error: "Login failed" });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
+};
+
+module.exports = {
+    registerUser,
+    loginUser
 };
