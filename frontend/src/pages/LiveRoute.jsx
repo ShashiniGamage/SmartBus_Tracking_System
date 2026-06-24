@@ -65,7 +65,7 @@ const LiveRoute = () => {
       </div>
 
       {/* Map Rendering Container */}
-      <div className="h-[500px] w-full rounded-lg overflow-hidden shadow-xl border-2 border-primaryRed">
+      <div className="h-125 w-full rounded-lg overflow-hidden shadow-xl border-2 border-primaryRed">
         <MapContainer center={[7.2517, 80.3464]} zoom={10} style={{ height: '100%', width: '100%' }}>
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           
