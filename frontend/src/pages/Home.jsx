@@ -1,5 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import MapView from '../components/MapView'; 
+import Cards from '../components/Cards';     
+import { Bus } from 'lucide-react';
 
 const Home = () => {
   return (
