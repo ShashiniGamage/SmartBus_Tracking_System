@@ -1,4 +1,4 @@
-const db = require('../config/db');
+/*const db = require('../config/db');
 
 // ── Bus ───────────────────────────────────────────────────────
 
@@ -193,4 +193,239 @@ module.exports = {
     createRoute, getMyRoutes,
     createSchedule, getMySchedules,
     startTrip, endTrip, reportDelay, getMyTrips
+};*/
+
+
+
+
+const db = require('../config/db');
+const { broadcastDelay, broadcastCancellation } = require('./trackingController');
+
+// ── Bus ───────────────────────────────────────────────────────
+const registerBus = async (req, res) => {
+    const { bus_number, type, capacity } = req.body;
+    if (!bus_number) return res.status(400).json({ message: 'Bus number required' });
+    try {
+        const [existing] = await db.query(`SELECT id FROM Buses WHERE bus_number=?`, [bus_number]);
+        if (existing.length) return res.status(400).json({ message: 'Bus number already registered' });
+        const [result] = await db.query(
+            `INSERT INTO Buses (bus_number, type, capacity, driver_id) VALUES (?,?,?,?)`,
+            [bus_number, type || null, capacity || null, req.user.id]
+        );
+        res.status(201).json({ message: 'Bus registered', busId: result.insertId });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getMyBus = async (req, res) => {
+    try {
+        const [rows] = await db.query(`SELECT * FROM Buses WHERE driver_id=?`, [req.user.id]);
+        res.json(rows[0] || null);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// ── Routes ────────────────────────────────────────────────────
+const createRoute = async (req, res) => {
+    const { origin, destination, route_name, stops } = req.body;
+    if (!origin || !destination || !stops?.length)
+        return res.status(400).json({ message: 'origin, destination and stops required' });
+    try {
+        const [routeResult] = await db.query(
+            `INSERT INTO Routes (driver_id, origin, destination, route_name, status) VALUES (?,?,?,?,'pending')`,
+            [req.user.id, origin, destination, route_name || `${origin} - ${destination}`]
+        );
+        const routeId = routeResult.insertId;
+        for (let i = 0; i < stops.length; i++) {
+            const s = stops[i];
+            await db.query(
+                `INSERT INTO Route_Stops (route_id, stop_name, latitude, longitude, stop_order, estimated_time_from_start)
+                 VALUES (?,?,?,?,?,?)`,
+                [routeId, s.stop_name, s.latitude || null, s.longitude || null, i + 1, s.estimated_time || 0]
+            );
+        }
+        res.status(201).json({ message: 'Route submitted for approval', routeId });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getMyRoutes = async (req, res) => {
+    try {
+        const [routes] = await db.query(
+            `SELECT r.*, GROUP_CONCAT(rs.stop_name ORDER BY rs.stop_order SEPARATOR ' → ') AS stop_list
+             FROM Routes r LEFT JOIN Route_Stops rs ON r.id = rs.route_id
+             WHERE r.driver_id=? GROUP BY r.id ORDER BY r.created_at DESC`,
+            [req.user.id]
+        );
+        res.json(routes);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// ── Schedules ─────────────────────────────────────────────────
+const createSchedule = async (req, res) => {
+    const { route_id, bus_id, departure_time, days_of_week } = req.body;
+    if (!route_id || !bus_id || !departure_time || !days_of_week)
+        return res.status(400).json({ message: 'All fields required' });
+    try {
+        const [route] = await db.query(
+            `SELECT status FROM Routes WHERE id=? AND driver_id=?`, [route_id, req.user.id]
+        );
+        if (!route.length) return res.status(404).json({ message: 'Route not found' });
+        if (route[0].status !== 'approved')
+            return res.status(400).json({ message: 'Route must be approved before scheduling' });
+        const [result] = await db.query(
+            `INSERT INTO Schedules (route_id, bus_id, driver_id, departure_time, days_of_week) VALUES (?,?,?,?,?)`,
+            [route_id, bus_id, req.user.id, departure_time, days_of_week]
+        );
+        res.status(201).json({ message: 'Schedule created', scheduleId: result.insertId });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getMySchedules = async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT s.*, r.route_name, r.origin, r.destination, b.bus_number
+            FROM Schedules s
+            JOIN Routes r ON s.route_id = r.id
+            JOIN Buses   b ON s.bus_id  = b.id
+            WHERE s.driver_id=? ORDER BY s.departure_time
+        `, [req.user.id]);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+// ── Trips ─────────────────────────────────────────────────────
+const startTrip = async (req, res) => {
+    const { route_id, bus_id, schedule_id } = req.body;
+    if (!route_id || !bus_id) return res.status(400).json({ message: 'route_id and bus_id required' });
+    try {
+        const [active] = await db.query(
+            `SELECT id FROM Trips WHERE driver_id=? AND status IN ('active','delayed')`,
+            [req.user.id]
+        );
+        if (active.length)
+            return res.status(400).json({ message: 'You already have an active trip. End it first.' });
+        const [result] = await db.query(
+            `INSERT INTO Trips (bus_id, driver_id, route_id, schedule_id, status, started_at)
+             VALUES (?,?,?,?,'active',NOW())`,
+            [bus_id, req.user.id, route_id, schedule_id || null]
+        );
+        res.status(201).json({ message: 'Trip started', tripId: result.insertId });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getActiveTrip = async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT t.*, r.route_name, r.origin, r.destination, r.id AS route_id,
+                   b.bus_number, b.id AS bus_id
+            FROM Trips t
+            JOIN Routes r ON t.route_id = r.id
+            JOIN Buses  b ON t.bus_id   = b.id
+            WHERE t.driver_id=? AND t.status IN ('active','delayed')
+            LIMIT 1
+        `, [req.user.id]);
+        res.json(rows[0] || null);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const endTrip = async (req, res) => {
+    const io = req.app.get('io');
+    try {
+        const [rows] = await db.query(
+            `SELECT t.id, b.bus_number FROM Trips t JOIN Buses b ON t.bus_id=b.id
+             WHERE t.id=? AND t.driver_id=? AND t.status IN ('active','delayed')`,
+            [req.params.id, req.user.id]
+        );
+        if (!rows.length) return res.status(404).json({ message: 'Trip not found or already ended' });
+        await db.query(
+            `UPDATE Trips SET status='completed', ended_at=NOW() WHERE id=?`, [req.params.id]
+        );
+        io.to(`trip_${req.params.id}`).emit('trip_completed', {
+            trip_id:    req.params.id,
+            bus_number: rows[0].bus_number,
+            message:    `✅ Trip completed. Thank you for riding!`
+        });
+        res.json({ message: 'Trip ended' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const reportDelay = async (req, res) => {
+    const { reason, extra_minutes } = req.body;
+    const io = req.app.get('io');
+    if (!reason) return res.status(400).json({ message: 'Delay reason required' });
+    try {
+        const [rows] = await db.query(
+            `SELECT t.id, b.bus_number FROM Trips t JOIN Buses b ON t.bus_id=b.id
+             WHERE t.id=? AND t.driver_id=?`,
+            [req.params.id, req.user.id]
+        );
+        if (!rows.length) return res.status(404).json({ message: 'Trip not found' });
+        await db.query(
+            `UPDATE Trips SET status='delayed', delay_reason=?, extra_minutes=? WHERE id=?`,
+            [reason, extra_minutes || 0, req.params.id]
+        );
+        await broadcastDelay(io, req.params.id, reason, extra_minutes || 0, rows[0].bus_number);
+        res.json({ message: 'Delay reported and passengers notified' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const cancelTrip = async (req, res) => {
+    const { reason } = req.body;
+    const io = req.app.get('io');
+    try {
+        const [rows] = await db.query(
+            `SELECT t.id, b.bus_number FROM Trips t JOIN Buses b ON t.bus_id=b.id
+             WHERE t.id=? AND t.driver_id=? AND t.status IN ('active','delayed','scheduled')`,
+            [req.params.id, req.user.id]
+        );
+        if (!rows.length) return res.status(404).json({ message: 'Trip not found' });
+        await db.query(
+            `UPDATE Trips SET status='cancelled', delay_reason=?, ended_at=NOW() WHERE id=?`,
+            [reason || 'Cancelled by driver', req.params.id]
+        );
+        await broadcastCancellation(io, req.params.id, reason || 'Cancelled by driver', rows[0].bus_number);
+        res.json({ message: 'Trip cancelled and passengers notified' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+const getMyTrips = async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT t.*, r.route_name, r.origin, r.destination, b.bus_number
+            FROM Trips t
+            JOIN Routes r ON t.route_id = r.id
+            JOIN Buses  b ON t.bus_id   = b.id
+            WHERE t.driver_id=? ORDER BY t.created_at DESC LIMIT 20
+        `, [req.user.id]);
+        res.json(rows);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+module.exports = {
+    registerBus, getMyBus,
+    createRoute, getMyRoutes,
+    createSchedule, getMySchedules,
+    startTrip, getActiveTrip, endTrip, reportDelay, cancelTrip, getMyTrips
 };
