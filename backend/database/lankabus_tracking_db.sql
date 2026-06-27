@@ -1,13 +1,13 @@
 -- ============================================================
---  smart_bus_db — Full Schema + Sample Data (Fixed)
+--  lankabus_tracking_db — Full Schema + Sample Data (Fixed)
 --  Compatible with MySQL 5.7 / 8.x
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS smart_bus_db
+CREATE DATABASE IF NOT EXISTS lankabus_tracking_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
-USE smart_bus_db;
+USE lankabus_tracking_db;
 
 -- ============================================================
 -- 1. USERS
