@@ -37,7 +37,7 @@ export default function Navbar() {
     }`}>
       {/* Top red bar */}
       <div className="bg-primary text-white text-xs py-1.5 text-center font-body hidden md:block">
-        🚌 Lanka Metro Transit — Connecting Sri Lanka, One Route at a Time
+        🚌 Smart Bus Transit — Connecting Sri Lanka, One Route at a Time
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -50,7 +50,7 @@ export default function Navbar() {
               <Bus size={22} className="text-white"/>
             </div>
             <div className="leading-tight">
-              <span className="block font-display font-bold text-navy text-base">Lanka Metro</span>
+              <span className="block font-display font-bold text-navy text-base">Smart Bus Transit</span>
               <span className="block font-body text-primary text-[10px] font-semibold tracking-widest uppercase">Transit</span>
             </div>
           </Link>

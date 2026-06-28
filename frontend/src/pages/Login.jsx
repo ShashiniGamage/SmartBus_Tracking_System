@@ -37,7 +37,7 @@ export default function Login() {
               <Bus size={32} className="text-white"/>
             </div>
             <h1 className="font-display font-bold text-2xl text-white">Welcome Back</h1>
-            <p className="text-white/80 text-sm font-body mt-1">Lanka Metro Transit</p>
+            <p className="text-white/80 text-sm font-body mt-1">Smart Bus Transit</p>
           </div>
 
           <div className="px-8 py-8">
@@ -80,7 +80,7 @@ export default function Login() {
             </p>
           </div>
         </div>
-        <p className="text-center text-white/50 text-xs font-body mt-6">© 2025 Lanka Metro Transit</p>
+        <p className="text-center text-white/50 text-xs font-body mt-6">© 2025 Smart Bus Transit</p>
       </div>
     </div>
   )

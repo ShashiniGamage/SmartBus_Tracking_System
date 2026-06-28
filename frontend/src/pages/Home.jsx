@@ -88,7 +88,7 @@ export default function Home() {
               Not After It Leaves.
             </h1>
             <p className="font-body text-gray-300 text-lg leading-relaxed max-w-lg">
-              Lanka Metro Transit brings real-time GPS tracking to Sri Lanka's bus network. Search your route, track your bus live, and never wait in the dark again.
+              Smart Bus Transit brings real-time GPS tracking to Sri Lanka's bus network. Search your route, track your bus live, and never wait in the dark again.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/live"     className="btn-primary text-base px-8 py-3.5 inline-flex items-center gap-2">

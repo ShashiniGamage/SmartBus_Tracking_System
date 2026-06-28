@@ -34,13 +34,13 @@ export function About() {
       <section className="bg-gradient-to-br from-navy to-[#2D1B4E] py-20 px-4">
         <div className="max-w-4xl mx-auto text-center text-white">
           <div className="inline-flex items-center gap-2 bg-primary/20 border border-primary/30 text-white px-4 py-2 rounded-full text-sm font-semibold font-body mb-6">
-            <Bus size={16}/> About Lanka Metro Transit
+            <Bus size={16}/> About Smart Bus Transit
           </div>
           <h1 className="font-display font-extrabold text-4xl md:text-5xl mb-6 leading-tight">
             We're Ending the Guessing<br/><span className="text-primary">at Bus Stops.</span>
           </h1>
           <p className="font-body text-gray-300 text-lg max-w-2xl mx-auto leading-relaxed">
-            Lanka Metro Transit was born from a simple frustration: why should millions of Sri Lankans stand at a bus stop, staring down the road, wondering if their bus already left?
+            Smart Bus Transit was born from a simple frustration: why should millions of Sri Lankans stand at a bus stop, staring down the road, wondering if their bus already left?
           </p>
         </div>
       </section>
@@ -269,7 +269,7 @@ export function Privacy() {
       <section className="bg-gradient-to-br from-navy to-[#2D1B4E] py-16 px-4 text-center">
         <div className="max-w-3xl mx-auto text-white">
           <h1 className="font-display font-extrabold text-4xl mb-4">Privacy <span className="text-primary">Policy</span></h1>
-          <p className="font-body text-gray-300">Last updated: 1 January 2025</p>
+          <p className="font-body text-gray-300">Last updated: 10 june 2026</p>
         </div>
       </section>
       <section className="py-16 bg-cream">
@@ -277,7 +277,7 @@ export function Privacy() {
           <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 border border-gray-100 space-y-8">
             <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
               <p className="font-body text-gray-600 text-sm leading-relaxed">
-                Lanka Metro Transit ("we", "our", "us") is committed to protecting the privacy of all users of our platform. This policy explains what data we collect, how we use it, and your rights regarding that data.
+                Smart Bus Transit ("we", "our", "us") is committed to protecting the privacy of all users of our platform. This policy explains what data we collect, how we use it, and your rights regarding that data.
               </p>
             </div>
             {sections.map(s => (

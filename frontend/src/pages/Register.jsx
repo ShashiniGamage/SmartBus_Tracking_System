@@ -33,7 +33,7 @@ export default function Register() {
               <UserCheck size={30} className="text-white"/>
             </div>
             <h1 className="font-display font-bold text-2xl text-white">Create Account</h1>
-            <p className="text-white/80 text-sm font-body mt-1">Join Lanka Metro Transit</p>
+            <p className="text-white/80 text-sm font-body mt-1">Join Smart Bus Transit</p>
           </div>
 
           <div className="px-8 py-8">

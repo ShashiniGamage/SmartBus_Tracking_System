@@ -13,7 +13,7 @@ export default function Footer() {
               <Bus size={20} className="text-white"/>
             </div>
             <div>
-              <span className="block font-display font-bold text-white">Lanka Metro</span>
+              <span className="block font-display font-bold text-white">Smart Bus Transit</span>
               <span className="block text-primary text-[10px] font-semibold tracking-widest uppercase">Transit</span>
             </div>
           </div>
@@ -64,7 +64,7 @@ export default function Footer() {
           <ul className="space-y-3">
             {[
               [Phone, '+94 11 234 5678'],
-              [Mail,  'info@lankametro.lk'],
+              [Mail,  'info@smartbustransit.lk'],
               [MapPin,'No. 42, Galle Road, Colombo 03'],
             ].map(([Icon, text], i) => (
               <li key={i} className="flex items-start gap-3 text-gray-400 text-sm font-body">
@@ -78,7 +78,7 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p className="text-gray-500 text-xs font-body">© 2025 Lanka Metro Transit. All rights reserved.</p>
+          <p className="text-gray-500 text-xs font-body">© 2025 Smart Bus Transit. All rights reserved.</p>
           <p className="text-gray-500 text-xs font-body">Built with ❤️ for Sri Lanka 🇱🇰</p>
         </div>
       </div>
