@@ -1,4 +1,4 @@
-@tailwind base;
+/*@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -40,4 +40,129 @@
 .leaflet-container { z-index: 1; border-radius: 1rem; }
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #C8102E; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #C8102E; border-radius: 3px; }*/
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    color: #0D0D1A;
+  }
+  h1,h2,h3,h4 { font-family: 'Poppins', sans-serif; }
+}
+
+@layer components {
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply bg-primary text-white font-display font-semibold px-6 py-3 rounded-xl
+           hover:bg-primary-dark active:scale-95
+           transition-all duration-200 shadow-lg shadow-primary/30
+           hover:shadow-primary/50 hover:-translate-y-0.5;
+  }
+  .btn-outline {
+    @apply border-2 border-primary text-primary font-display font-semibold px-6 py-3
+           rounded-xl hover:bg-primary hover:text-white transition-all duration-200;
+  }
+  .btn-white {
+    @apply bg-white text-primary font-display font-bold px-6 py-3 rounded-xl
+           hover:bg-red-50 transition-all duration-200 shadow-xl;
+  }
+
+  /* ── Cards ── */
+  .card {
+    @apply bg-white rounded-2xl shadow-lg border border-red-50
+           hover:shadow-xl hover:shadow-primary/10
+           transition-all duration-300 hover:-translate-y-1;
+  }
+  .card-dark {
+    @apply bg-navy rounded-2xl border border-white/10
+           hover:border-primary/40 transition-all duration-300;
+  }
+
+  /* ── Typography ── */
+  .section-title {
+    @apply text-3xl md:text-4xl font-display font-bold text-navy;
+  }
+  .section-tag {
+    @apply text-primary font-body font-semibold text-sm uppercase tracking-widest;
+  }
+
+  /* ── Inputs ── */
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-red-100 rounded-xl font-body
+           focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10
+           transition-all duration-200 bg-white text-navy placeholder-red-200;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold;
+  }
+
+  /* ── Gradient backgrounds ── */
+  .bg-hero {
+    background: linear-gradient(135deg, #0D0D1A 0%, #1A0A0F 50%, #2D0A14 100%);
+  }
+  .bg-section-alt {
+    background: linear-gradient(180deg, #FFF5F5 0%, #ffffff 100%);
+  }
+}
+
+/* ── Reveal animation ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Leaflet ── */
+.leaflet-container {
+  z-index: 1;
+  border-radius: 1rem;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #fff0f0; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E8192C, #B5121F);
+  border-radius: 10px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: #E8192C;
+  color: white;
+}
+
+/* ── Red glow effect ── */
+.glow-red {
+  box-shadow: 0 0 30px rgba(232, 25, 44, 0.3), 0 0 60px rgba(232, 25, 44, 0.1);
+}
+
+/* ── Nav active indicator ── */
+.nav-active {
+  position: relative;
+}
+.nav-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background: #E8192C;
+  border-radius: 2px;
+}

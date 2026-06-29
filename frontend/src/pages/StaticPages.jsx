@@ -194,8 +194,8 @@ export function Contact() {
             </div>
             {[
               { icon: Phone,  label:'Phone',   value:'+94 11 234 5678',                     href:'tel:+94112345678' },
-              { icon: Mail,   label:'Email',   value:'info@lankametro.lk',                   href:'mailto:info@lankametro.lk' },
-              { icon: MapPin, label:'Address', value:'No. 42, Galle Road, Colombo 03, Sri Lanka', href:'#' },
+              { icon: Mail,   label:'Email',   value:'info@smartbustransit.lk',                   href:'mailto:info@smartbustransit.lk' },
+              { icon: MapPin, label:'Address', value:'No. 42, Kegalle Road, Mawanalla, Sri Lanka', href:'#' },
             ].map(c => (
               <a key={c.label} href={c.href}
                 className="flex items-start gap-4 p-5 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-primary/30 hover:shadow-md transition-all group">

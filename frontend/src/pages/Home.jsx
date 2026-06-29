@@ -83,9 +83,9 @@ export default function Home() {
               Live Tracking Active — 24/7
             </div>
             <h1 className="font-display font-extrabold text-4xl md:text-6xl leading-tight">
-              Know When Your<br/>
-              <span className="text-primary">Bus Arrives.</span><br/>
-              Not After It Leaves.
+              The Future Of<br/>
+              <span className="text-primary">SriLanakan</span><br/>
+              Travel.
             </h1>
             <p className="font-body text-gray-300 text-lg leading-relaxed max-w-lg">
               Smart Bus Transit brings real-time GPS tracking to Sri Lanka's bus network. Search your route, track your bus live, and never wait in the dark again.
@@ -204,23 +204,23 @@ export default function Home() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-16 bg-primary relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2"/>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2"/>
+      <section className="py-16 bg-white relative overflow-hidden border-t border-red-100">
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full -translate-y-1/2 translate-x-1/2"/>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary rounded-full translate-y-1/2 -translate-x-1/2"/>
         </div>
         <div ref={addRef} className="reveal relative max-w-3xl mx-auto px-4 text-center">
-          <h2 className="font-display font-extrabold text-3xl md:text-4xl text-white mb-4">
+          <h2 className="font-display font-extrabold text-3xl md:text-4xl text-navy mb-4">
             Ready to Never Miss a Bus Again?
           </h2>
-          <p className="font-body text-white/80 text-lg mb-8">
+          <p className="font-body text-gray-500 text-lg mb-8">
             Join thousands of Sri Lankan commuters who travel smarter every day.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/register" className="bg-white text-primary font-display font-bold px-8 py-3.5 rounded-xl hover:bg-gray-100 transition-all shadow-xl inline-flex items-center gap-2">
+            <Link to="/register" className="bg-primary text-white font-display font-bold px-8 py-3.5 rounded-xl hover:bg-primary-dark transition-all shadow-lg shadow-primary/30 inline-flex items-center gap-2">
               <Users size={18}/> Create Free Account
             </Link>
-            <Link to="/live" className="border-2 border-white text-white font-display font-semibold px-8 py-3.5 rounded-xl hover:bg-white/10 transition-all inline-flex items-center gap-2">
+            <Link to="/live" className="border-2 border-primary text-primary font-display font-semibold px-8 py-3.5 rounded-xl hover:bg-primary hover:text-white transition-all inline-flex items-center gap-2">
               <Bus size={18}/> View Live Map
             </Link>
           </div>
